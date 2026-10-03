@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="何涛的个人 Portfolio。西北大学应用统计硕士研究生，研究方向为时间序列与深度学习，求职意向为产品经理 / 产品运营。">
+  <meta name="description" content="何涛的个人 Portfolio。西北大学应用统计硕士研究生，研究方向为时间序列与深度学习，关注统计建模、数据分析与算法研究。">
   <meta name="color-scheme" content="dark">
-  <title>何涛 | 产品经理 · 产品运营</title>
+  <title>何涛 | 应用统计 · 时间序列研究</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2311ABB0'/%3E%3Ctext x='16' y='21.5' font-family='Arial,Helvetica,sans-serif' font-size='13' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EHT%3C/text%3E%3C/svg%3E">
   <!-- 首帧前置脚本：标记 JS 可用 + 预设初始版块底色分区，避免闪烁 -->
   <script>
@@ -33,10 +33,10 @@
                    Microsoft YaHei UI / Cascadia Mono
          写法：西文字体在前、中文字体在后。浏览器按字形逐个回退，
                拉丁与数字走西文字体，中文落到中文字体，两类字形各取所长。 */
-      --font-sans: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI",
+      --font-sans: "Segoe UI Variable Text", "Microsoft YaHei UI", "Segoe UI",
                    "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
       --font-display: "DIN Next LT Pro", "Segoe UI Variable Display", "Bahnschrift",
-                      "DengXian", "Microsoft YaHei UI", "Microsoft YaHei",
+                      "Microsoft YaHei UI", "DengXian", "Microsoft YaHei",
                       "PingFang SC", sans-serif;
       --font-mono: "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace,
                    "SFMono-Regular", "Courier New", monospace;
@@ -124,11 +124,12 @@
       color: var(--text-1);
       font-family: var(--font-sans);
       font-size: 16px;
-      line-height: 1.75;
+      line-height: 1.8;
+      letter-spacing: 0.012em;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
       font-optical-sizing: auto;
-      font-feature-settings: "kern" 1, "liga" 1;
+      font-feature-settings: "kern" 1, "liga" 1, "palt" 1;
       overflow-x: hidden;
       transition: background-color 0.45s ease, color 0.35s ease;
     }
@@ -314,6 +315,8 @@
       background: none;
       color: var(--text-2);
       font-size: 14px;
+      font-weight: 520;
+      letter-spacing: 0.025em;
       border-radius: var(--r-control);
       cursor: pointer;
       transition: color var(--dur-fast) ease;
@@ -397,15 +400,17 @@
       margin-bottom: 12px;
       font-family: var(--font-display);
       font-size: clamp(30px, 3.6vw, 42px);
-      font-weight: 600;
-      line-height: 1.22;
-      letter-spacing: 0.005em;
+      font-weight: 700;
+      line-height: 1.18;
+      letter-spacing: -0.035em;
     }
     .section-head p {
       margin-bottom: 0;
       max-width: 30em;
       color: var(--text-2);
       font-size: 16px;
+      line-height: 1.82;
+      letter-spacing: 0.018em;
     }
 
     .field-label {
@@ -505,7 +510,8 @@
     .home-greet {
       margin-bottom: 10px;
       font-size: 13px;
-      font-weight: 600;
+      font-family: var(--font-mono);
+      font-weight: 500;
       letter-spacing: 0.24em;
       /* 居中 + 宽字距会因末字后多出一段字距而整体偏左，用等量缩进修正 */
       text-indent: 0.24em;
@@ -516,9 +522,9 @@
       margin-bottom: 10px;
       font-family: var(--font-display);
       font-size: clamp(54px, 9vw, 108px);
-      font-weight: 600;
-      line-height: 1.04;
-      letter-spacing: 0.005em;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.065em;
       color: #ffffff;
       text-shadow: 0 6px 34px rgba(0, 0, 0, 0.45);
     }
@@ -526,8 +532,8 @@
       margin-bottom: 26px;
       font-family: var(--font-mono);
       font-size: 12px;
-      letter-spacing: 0.44em;
-      text-indent: 0.44em;
+      letter-spacing: 0.52em;
+      text-indent: 0.52em;
       color: rgba(255, 255, 255, 0.62);
     }
     .home-role {
@@ -543,8 +549,8 @@
       -webkit-backdrop-filter: blur(10px);
       color: #ffffff;
       font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
+      font-weight: 520;
+      letter-spacing: 0.08em;
     }
     .home-rule {
       display: block;
@@ -556,8 +562,12 @@
     }
     .home-intro {
       margin: 0 auto 28px;
-      max-width: 34em;
+      max-width: 38em;
       color: rgba(255, 255, 255, 0.86);
+      font-size: 16.5px;
+      font-weight: 400;
+      line-height: 1.95;
+      letter-spacing: 0.018em;
       font-size: clamp(15px, 1.6vw, 17px);
       line-height: 1.95;
     }
@@ -603,9 +613,9 @@
       margin-bottom: 16px;
       font-family: var(--font-display);
       font-size: clamp(44px, 6.6vw, 74px);
-      font-weight: 600;
-      line-height: 1.06;
-      letter-spacing: 0.005em;
+      font-weight: 700;
+      line-height: 1.02;
+      letter-spacing: -0.055em;
       background: linear-gradient(
         100deg,
         var(--text-1) 0%,
@@ -675,6 +685,9 @@
       max-width: 32em;
       margin-bottom: 26px;
       color: var(--text-2);
+      font-size: 16.5px;
+      line-height: 1.9;
+      letter-spacing: 0.018em;
       font-size: 16px;
       line-height: 1.9;
     }
@@ -1432,8 +1445,7 @@
           <p class="home-en reveal" style="--d:2" data-decode>HE TAO</p>
 
           <p class="home-role reveal" style="--d:3">
-            <span class="pulse-dot" aria-hidden="true"></span>
-            产品经理 / 产品运营
+            应用统计 / 时间序列研究
           </p>
 
           <span class="home-rule reveal" style="--d:4"></span>
@@ -1442,7 +1454,7 @@
             我是何涛，西北大学应用统计硕士研究生（211），研究方向为时间序列与深度学习。
             习惯把模糊的问题拆成可验证的步骤，再用数据检验结论是否成立。
             做过统计建模竞赛，也以一作身份完成了一篇时间序列预测方向的论文。
-            目前正在寻找产品经理 / 产品运营方向的实习与全职机会。
+            目前关注时间序列预测、深度学习与数据分析相关实践。
           </p>
 
           <ul class="home-meta reveal" style="--d:6">
@@ -1458,7 +1470,7 @@
     <section class="section shell panel" id="profile">
       <div class="section-head reveal">
         <h2>基本信息</h2>
-        <p>西北大学应用统计硕士研究生，研究方向为时间序列与深度学习，求职意向为产品经理 / 产品运营。</p>
+        <p>西北大学应用统计硕士研究生，专注时间序列预测、深度学习与数据分析。</p>
       </div>
 
       <div class="profile-hero">
@@ -1470,8 +1482,7 @@
           </h1>
 
           <p class="role reveal" style="--d:3">
-            <span class="pulse-dot" aria-hidden="true"></span>
-            产品经理 / 产品运营
+            应用统计 / 时间序列研究
           </p>
 
           <p class="profile-intro reveal" style="--d:4">
@@ -1497,7 +1508,7 @@
           </div>
           <ul class="profile-badges">
             <li><span aria-hidden="true">●</span> OPEN TO WORK</li>
-            <li>产品经理 / 产品运营</li>
+            <li>统计建模 / 数据分析</li>
             <li>时间序列与深度学习</li>
           </ul>
         </div>
@@ -1518,8 +1529,8 @@
           <dd>陕西省西安市<small>Xi'an, Shaanxi</small></dd>
         </div>
         <div class="info-card glass spot reveal" style="--d:3">
-          <dt>Target</dt>
-          <dd>产品经理 / 产品运营<small>Job Objective</small></dd>
+          <dt>Modeling</dt>
+          <dd>统计建模与数据分析<small>Statistical Modeling</small></dd>
         </div>
       </dl>
 
@@ -1621,7 +1632,7 @@
 
             <h4 class="field-label">工作内容</h4>
             <ul class="exp-list">
-              <li>[在此填写工作内容，例如负责的需求分析与方案设计]</li>
+              <li>[在此填写工作内容，例如研究问题拆解与分析方案设计]</li>
               <li>[在此填写工作内容，例如指标体系建设与数据分析]</li>
               <li>[在此填写工作内容，例如 AI 能力的落地与效果验证]</li>
             </ul>
@@ -1636,7 +1647,7 @@
             <ul class="exp-skills">
               <li>AI Agent</li>
               <li>数据分析</li>
-              <li>产品设计</li>
+              <li>模型评估</li>
             </ul>
           </div>
         </article>
@@ -1702,7 +1713,7 @@
               </p>
               <div class="project-block">
                 <h4>我的工作</h4>
-                <p>负责产品设计、Agent 架构设计、知识库构建与核心功能开发。</p>
+                <p>负责研究方案设计、Agent 架构设计、知识库构建与核心功能开发。</p>
               </div>
             </div>
 
@@ -1790,7 +1801,7 @@
 
         <!-- TODO: 替换为真实项目信息与链接 -->
         <article class="project glass spot reveal" style="--d:1">
-          <ul class="project-tags"><li>Product Design</li></ul>
+          <ul class="project-tags"><li>Data Visualization</li></ul>
           <h3>[项目名称]</h3>
           <p class="project-summary">[一句话说明项目解决的问题与核心价值。]</p>
           <div class="project-block">
@@ -1814,7 +1825,7 @@
     <section class="section shell panel" id="contact">
       <div class="section-head reveal">
         <h2>联系方式</h2>
-        <p>欢迎就产品经理、产品运营及相关岗位与我联系。</p>
+        <p>欢迎就数据分析、统计建模、算法研究及相关岗位与我联系。</p>
       </div>
 
       <div class="contact-panel glass spot reveal">
@@ -1833,8 +1844,8 @@
             <strong>陕西省西安市</strong>
           </div>
           <div class="contact-item">
-            <span>Job Objective</span>
-            <strong>产品经理 / 产品运营</strong>
+            <span>Core Skills</span>
+            <strong>统计建模 / 数据分析</strong>
           </div>
         </div>
       </div>
