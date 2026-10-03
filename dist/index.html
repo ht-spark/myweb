@@ -1,20 +1,17 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark" data-zone="profile">
+<html lang="zh-CN" data-zone="home">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="何涛的个人 Portfolio。西北大学应用统计硕士研究生，研究方向为时间序列与深度学习，求职意向为产品经理 / 产品运营。">
-  <meta name="color-scheme" content="dark light">
+  <meta name="color-scheme" content="dark">
   <title>何涛 | 产品经理 · 产品运营</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2311ABB0'/%3E%3Ctext x='16' y='21.5' font-family='Arial,Helvetica,sans-serif' font-size='13' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EHT%3C/text%3E%3C/svg%3E">
-  <!-- 首帧前置脚本：标记 JS 可用 + 应用已保存主题与初始背景分区，避免闪烁 -->
+  <!-- 首帧前置脚本：标记 JS 可用 + 预设初始版块底色分区，避免闪烁 -->
   <script>
     (function () {
       var root = document.documentElement;
       root.classList.add("js");
-      var saved = null;
-      try { saved = localStorage.getItem("ht-theme"); } catch (e) {}
-      root.setAttribute("data-theme", saved === "light" ? "light" : "dark");
       var panels = ["home", "profile", "experience", "projects", "contact"];
       var id = String(window.location.hash || "").slice(1);
       root.setAttribute("data-zone", panels.indexOf(id) !== -1 ? id : "home");
@@ -24,8 +21,9 @@
     /* ==========================================================
        Design Token
        配色参考：teal #11ABB0(交互主色) + orange #F06000(激活点睛)
-                 灰色阶 #0a0a0a → #eff0f0 → #ffffff
-       主题锁：data-theme 控制深/浅两套，data-zone 仅切换页面底色层次
+                 深色灰阶 #0a0a0a / #121212 / #141414 / #1c1c1c
+       主题：固定夜晚（深色）单一主题，不再提供深浅切换
+       data-zone：仅切换各版块的底色层次，不改变排版
        圆角体系：容器 18px / 控件 12px / 标签 999px
        ========================================================== */
     :root {
@@ -64,10 +62,10 @@
       --accent-2-soft: rgba(240, 96, 0, 0.16);
     }
 
-    /* ---------- 深色 ---------- */
-    html[data-theme="dark"] {
+    /* ---------- 深色主题（唯一主题，固定夜晚配色） ---------- */
+    html {
       --bg-base: #141414;
-      --bg-elev: #1e1e1e;
+      --header-alpha: 76%;
 
       --surface: rgba(255, 255, 255, 0.045);
       --surface-2: rgba(255, 255, 255, 0.075);
@@ -95,82 +93,23 @@
       --grain: 0.05;
       --cursor-light: rgba(17, 171, 176, 0.1);
 
-      --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
       --shadow-2: 0 18px 44px rgba(0, 0, 0, 0.46);
       --shadow-3: 0 34px 90px rgba(0, 0, 0, 0.6);
     }
 
-    /* ---------- 浅色 ---------- */
-    html[data-theme="light"] {
-      --bg-base: #ffffff;
-      --bg-elev: #ffffff;
+    /* ---------- 背景色调：按版块叠层（参考模板 #141414 / #1c1c1c / #121212 / #0a0a0a） ---------- */
+    html[data-zone="profile"]    { --bg-base: #141414; }
+    html[data-zone="experience"] { --bg-base: #1c1c1c; }
+    html[data-zone="projects"]   { --bg-base: #121212; }
+    html[data-zone="contact"]    { --bg-base: #0a0a0a; }
 
-      --surface: rgba(40, 40, 40, 0.025);
-      --surface-2: rgba(40, 40, 40, 0.05);
-      --surface-solid: #ffffff;
-
-      --text-1: #282828;
-      --text-2: #545656;
-      --text-3: #656767;
-
-      --border: #e0e0e0;
-      --border-strong: #c1c1c1;
-
-      --accent: #11abb0;
-      --accent-strong: #0a7377;
-      --accent-soft: rgba(17, 171, 176, 0.12);
-      --accent-ink: #0a0a0a;
-      --accent-2: #b03b00;
-      --accent-2-on: #ffffff;
-      --accent-2-ink: #b03b00;
-
-      --aurora-1: rgba(17, 171, 176, 0.16);
-      --aurora-2: rgba(240, 96, 0, 0.09);
-      --aurora-3: rgba(17, 171, 176, 0.09);
-      --grid-line: rgba(40, 40, 40, 0.045);
-      --grain: 0.03;
-      --cursor-light: rgba(17, 171, 176, 0.09);
-
-      --shadow-1: 0 1px 2px rgba(40, 40, 40, 0.05);
-      --shadow-2: 0 16px 40px rgba(40, 40, 40, 0.08);
-      --shadow-3: 0 30px 80px rgba(40, 40, 40, 0.1);
-    }
-
-    /* ---------- 背景色调：按版块叠层（参考模板 #141414 / #ffffff / #eff0f0 / #0a0a0a） ---------- */
-    html[data-theme="dark"][data-zone="profile"]    { --bg-base: #141414; }
-    html[data-theme="dark"][data-zone="experience"] { --bg-base: #1c1c1c; }
-    html[data-theme="dark"][data-zone="projects"]   { --bg-base: #121212; }
-    html[data-theme="dark"][data-zone="contact"]    { --bg-base: #0a0a0a; }
-
-    html[data-theme="light"][data-zone="profile"]    { --bg-base: #ffffff; }
-    html[data-theme="light"][data-zone="experience"] { --bg-base: #f4f4f4; }
-    html[data-theme="light"][data-zone="projects"]   { --bg-base: #eff0f0; }
-    html[data-theme="light"][data-zone="contact"]    { --bg-base: #e9eaea; }
-
-    /* ---------- 首页：整页固定深色（照片 hero），不受主题切换影响 ---------- */
+    /* ---------- 首页：照片 hero，底色更深、导航更透明（让星空透出来） ---------- */
     html[data-zone="home"] {
       --bg-base: #0a0a0a;
-      --bg-elev: #141414;
-      --surface: rgba(255, 255, 255, 0.045);
-      --surface-2: rgba(255, 255, 255, 0.075);
-      --surface-solid: #1c1c1c;
-      --text-1: #ffffff;
-      --text-2: rgba(255, 255, 255, 0.68);
-      --text-3: rgba(255, 255, 255, 0.5);
-      --border: rgba(255, 255, 255, 0.12);
-      --border-strong: rgba(255, 255, 255, 0.26);
-      --accent-strong: #3fd6db;
-      --accent-ink: #0a0a0a;
-      --accent-2: #f06000;
-      --accent-2-on: #0a0a0a;
-      --accent-2-ink: #ff8a3d;
-      --header-bg: rgba(8, 8, 10, 0.34);
+      --header-alpha: 34%;
       --aurora-1: rgba(17, 171, 176, 0.2);
       --aurora-2: rgba(240, 96, 0, 0.18);
       --aurora-3: rgba(17, 171, 176, 0.12);
-      --grid-line: rgba(255, 255, 255, 0.04);
-      --grain: 0.05;
-      --cursor-light: rgba(17, 171, 176, 0.08);
     }
 
     /* ==========================================================
@@ -342,7 +281,7 @@
       top: 0;
       z-index: 30;
       border-bottom: 1px solid var(--border);
-      background: color-mix(in srgb, var(--bg-base) 76%, transparent);
+      background: color-mix(in srgb, var(--bg-base) var(--header-alpha, 76%), transparent);
       backdrop-filter: saturate(160%) blur(18px);
       -webkit-backdrop-filter: saturate(160%) blur(18px);
       transition: background-color 0.45s ease, border-color 0.45s ease;
@@ -397,38 +336,6 @@
     }
     .nav-indicator.is-ready { opacity: 1; }
 
-    .nav-tools {
-      grid-column: 3;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      justify-self: end;
-    }
-
-    .theme-toggle {
-      display: grid;
-      place-items: center;
-      width: 38px;
-      height: 38px;
-      border: 1px solid var(--border);
-      border-radius: var(--r-control);
-      background: var(--surface);
-      color: var(--text-2);
-      cursor: pointer;
-      transition: color var(--dur-fast) ease, border-color var(--dur-fast) ease,
-                  background var(--dur-fast) ease, transform var(--dur-fast) ease;
-    }
-    .theme-toggle:hover {
-      color: var(--accent-strong);
-      border-color: var(--accent);
-      background: var(--accent-soft);
-    }
-    .theme-toggle:active { transform: scale(0.94); }
-    .theme-toggle svg { width: 17px; height: 17px; display: block; }
-    .theme-toggle .icon-moon { display: none; }
-    html[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
-    html[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
-
     .menu-button {
       display: none;
       align-items: center;
@@ -468,62 +375,9 @@
     /* ==========================================================
        Buttons
        ========================================================== */
-    .button {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-height: 42px;
-      padding: 10px 20px;
-      border: 1px solid transparent;
-      border-radius: var(--r-control);
-      font-family: var(--font-display);
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1;
-      white-space: nowrap;
-      cursor: pointer;
-      overflow: hidden;
-      translate: var(--tx, 0) var(--ty, 0);
-      transition: translate 0.2s ease-out, background var(--dur-fast) ease,
-                  border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
-    }
-    .button:active { scale: 0.97; }
-
-    .button-primary {
-      background: var(--accent);
-      color: var(--accent-ink);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26), 0 10px 26px rgba(17, 171, 176, 0.28);
-    }
-    /* 参考模板：主按钮 hover 变橙色 */
-    .button-primary:hover {
-      background: var(--accent-2);
-      color: var(--accent-2-on);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 14px 32px rgba(240, 96, 0, 0.34);
-    }
-    .button-primary::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.36), transparent 70%);
-      transform: translateX(-120%);
-      transition: transform 0.7s var(--ease-out);
-      pointer-events: none;
-    }
-    .button-primary:hover::after { transform: translateX(120%); }
-
-    .button-ghost {
-      background: var(--surface);
-      border-color: var(--border);
-      color: var(--text-1);
-    }
-    .button-ghost:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-strong); }
-
-    .button-sm { min-height: 38px; padding: 8px 15px; font-size: 14px; }
-
+    /* 页面当前没有按钮入口；如后续需要「下载简历」等 CTA，
+       按原设计语言新增即可：teal 填充 + 白/深字 + 微圆角。 */
     .arrow { transition: transform 0.25s var(--ease-out); }
-    .button:hover .arrow,
     .link-arrow:hover .arrow { transform: translateX(4px); }
 
     /* ==========================================================
@@ -1406,7 +1260,6 @@
         transition-duration: 0.01ms !important;
       }
       html.js .reveal { opacity: 1; transform: none; filter: none; }
-      .button { translate: 0 0 !important; }
     }
 
     @media (prefers-reduced-transparency: reduce) {
@@ -1479,11 +1332,9 @@
       }
       .home-rule { max-width: 48%; }
 
-      /* 移动端：导航项收进下拉，工具与菜单按钮靠右 */
-      .nav { display: flex; align-items: center; justify-content: flex-start; }
-      .nav-tools { order: 1; margin-left: auto; }
-      .menu-button { display: inline-flex; order: 2; }
-      .menu-button span:last-child { display: none; }
+      /* 移动端：导航项收进下拉，菜单按钮靠右 */
+      .nav { display: flex; align-items: center; justify-content: flex-end; }
+      .menu-button { display: inline-flex; }
 
       .nav-links {
         position: absolute;
@@ -1567,20 +1418,6 @@
         <button class="nav-link" type="button" data-panel-target="contact">联系我</button>
         <span class="nav-indicator" aria-hidden="true"></span>
       </div>
-
-      <span class="nav-tools">
-        <button class="theme-toggle" type="button" id="theme-toggle" aria-label="切换深色 / 浅色主题">
-          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="4.2"></circle>
-            <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"></path>
-          </svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-            <path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5a8.6 8.6 0 1 0 10.9 10.9Z"></path>
-          </svg>
-        </button>
-        <!-- TODO: 替换为真实简历文件，例如 href="assets/resume.pdf" download -->
-        <a class="button button-primary button-sm magnetic" href="#">下载简历</a>
-      </span>
     </nav>
   </header>
 
@@ -2016,7 +1853,6 @@
       var navMenu = document.querySelector("#nav-links");
       var navIndicator = document.querySelector(".nav-indicator");
       var menuButton = document.querySelector(".menu-button");
-      var themeToggle = document.querySelector("#theme-toggle");
 
       var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       var finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -2094,17 +1930,6 @@
         navIndicator.classList.add("is-ready");
       }
 
-      /* ---------------- 主题切换 ---------------- */
-      function applyTheme(theme) {
-        root.setAttribute("data-theme", theme);
-        try { localStorage.setItem("ht-theme", theme); } catch (e) {}
-      }
-      if (themeToggle) {
-        themeToggle.addEventListener("click", function () {
-          applyTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
-        });
-      }
-
       /* ---------------- 移动端菜单 ---------------- */
       function closeMenu() {
         if (!navMenu.classList.contains("is-open")) return;
@@ -2167,18 +1992,6 @@
           var next = event.target.closest(".spot");
           if (next !== spotEl) spotEl = next;
         }, { passive: true });
-
-        Array.prototype.forEach.call(document.querySelectorAll(".magnetic"), function (el) {
-          el.addEventListener("pointermove", function (event) {
-            var r = el.getBoundingClientRect();
-            el.style.setProperty("--tx", ((event.clientX - (r.left + r.width / 2)) * 0.2).toFixed(1) + "px");
-            el.style.setProperty("--ty", ((event.clientY - (r.top + r.height / 2)) * 0.28).toFixed(1) + "px");
-          });
-          el.addEventListener("pointerleave", function () {
-            el.style.setProperty("--tx", "0px");
-            el.style.setProperty("--ty", "0px");
-          });
-        });
       }
 
       /* ---------------- 名称解码效果 ---------------- */
