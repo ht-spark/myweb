@@ -2068,6 +2068,8 @@
       border-radius: 2px;
       font-size: 11.5px;
     }
+    /* 论文题目两端对齐：每行行末顶满右边 */
+    .profile-education-card .edu-fields dd:has(.pub) { text-align: justify; }
 
     /* 技能卡 */
     .profile-skills-card {
@@ -2097,9 +2099,17 @@
       font-size: 14px;
     }
     .profile-skills-card .chips { gap: 8px; }
+    /* 技能标签统一为橙黄色（覆盖各分组修饰类的配色） */
     .profile-skills-card .chip {
       padding: 7px 14px;
       font-size: 16.5px;
+      border-color: color-mix(in srgb, var(--accent-2) 44%, transparent);
+      color: var(--accent-2-ink);
+    }
+    .profile-skills-card .chip:hover {
+      border-color: var(--accent-2);
+      background: var(--accent-2-soft);
+      color: var(--accent-2-ink);
     }
 
     /* 平板及以上：证件照左栏与档案列并排，随页面整体滚动（不悬浮） */
@@ -2363,6 +2373,805 @@
       .home-hero { background-attachment: scroll; }
     }
   </style>
+
+  <style>
+    /* ==========================================================
+       Creator-inspired refinement
+       设计语言取自参考提示词的超大排版、动态能力带与堆叠项目卡，
+       但保留求职作品集的信息结构、中文内容与现有锚点。
+       ========================================================== */
+    :root {
+      --max: 1280px;
+      --r-container: 28px;
+      --r-control: 14px;
+      --accent: #ff6436;
+      --accent-strong: #ff8a68;
+      --accent-soft: rgba(255, 100, 54, 0.16);
+      --accent-ink: #0b0b0a;
+      --accent-2: #ff6436;
+      --accent-2-ink: #ff8a68;
+      --accent-2-soft: rgba(255, 100, 54, 0.16);
+      --cursor-light: rgba(255, 100, 54, 0.1);
+      --aurora-1: rgba(255, 100, 54, 0.13);
+      --aurora-2: rgba(255, 100, 54, 0.08);
+    }
+
+    body {
+      background: #0c0c0c;
+      color: #d7e2ea;
+    }
+
+    .site-header {
+      background: rgba(12, 12, 12, 0.68);
+      border-bottom-color: rgba(215, 226, 234, 0.1);
+    }
+
+    .nav {
+      width: min(calc(100% - 48px), 1340px);
+    }
+
+    .nav-brand strong {
+      color: #eef4f7;
+      font-size: 20px;
+      font-weight: 850;
+    }
+
+    .nav-link {
+      color: rgba(215, 226, 234, 0.58);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-link:hover,
+    .nav-link.is-active { color: #eef4f7; }
+
+    .section {
+      padding-top: clamp(88px, 8vw, 126px);
+      padding-bottom: clamp(100px, 11vw, 170px);
+    }
+
+    .section::before {
+      background:
+        radial-gradient(58% 34% at 84% 12%, rgba(255, 100, 54, 0.065), transparent 72%),
+        linear-gradient(180deg, rgba(215, 226, 234, 0.018), transparent 28%);
+    }
+
+    .section-head {
+      max-width: 920px;
+      margin: 0 auto clamp(48px, 6vw, 82px) !important;
+      text-align: center;
+    }
+
+    .section-head h2 {
+      margin-bottom: 20px;
+      font-size: clamp(56px, 8.5vw, 118px);
+      font-weight: 900;
+      line-height: 0.86;
+      letter-spacing: -0.075em;
+      text-transform: uppercase;
+      color: #d7e2ea;
+      background: linear-gradient(180deg, #eef4f7 0%, #87939d 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-head p {
+      max-width: 42em;
+      margin-inline: auto;
+      color: rgba(215, 226, 234, 0.58);
+      font-size: clamp(14px, 1.25vw, 17px);
+      letter-spacing: 0.03em;
+    }
+
+    /* ---------- 首页：超大字体、中心舞台与单条能力带 ---------- */
+    .home-hero {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      min-height: 100dvh;
+      padding: var(--nav-h) 0 0;
+      place-items: stretch;
+      overflow: hidden;
+      background-position: center 50%;
+      background-size: cover;
+      animation: none;
+    }
+
+    @keyframes hero-background-drift {
+      0% { background-position: 48% 48%; }
+      50% { background-position: 53% 46%; }
+      100% { background-position: 50% 52%; }
+    }
+
+    /* Vesper-inspired 动态背景：视频加载前保留本地图片作为稳定首帧 */
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      transform: scale(1.045);
+      filter: blur(8px) saturate(0.58) contrast(1.08) brightness(0.64);
+      transition:
+        opacity 1.35s var(--ease-out),
+        transform 2.2s var(--ease-out),
+        filter 1.8s var(--ease-out);
+      pointer-events: none;
+    }
+
+    .hero-video.is-ready {
+      opacity: 0.88;
+      transform: scale(1);
+      filter: blur(0) saturate(0.68) contrast(1.1) brightness(0.6);
+    }
+
+    .hero-particles {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      opacity: 0.62;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .home-hero::before {
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.2) 42%, #0c0c0c 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.56), rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.56));
+    }
+
+    .home-hero::after {
+      z-index: 1;
+      background:
+        radial-gradient(44% 58% at 50% 42%, transparent 0%, rgba(0, 0, 0, 0.2) 72%),
+        linear-gradient(90deg, transparent 49.9%, rgba(215, 226, 234, 0.08) 50%, transparent 50.1%);
+    }
+
+    .home-inner {
+      position: relative;
+      z-index: 3;
+      width: min(calc(100% - 48px), 1180px);
+      max-width: none;
+      min-height: 0;
+      margin-inline: auto;
+      padding: clamp(54px, 7vh, 88px) 0 clamp(30px, 5vh, 58px);
+      justify-content: center;
+    }
+
+    .home-copy {
+      position: relative;
+      isolation: isolate;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+    }
+
+    .home-copy::before,
+    .home-copy::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: clamp(150px, 21vw, 300px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      pointer-events: none;
+      display: none;
+    }
+
+    .home-copy::before {
+      left: 6%;
+      top: 2%;
+      border: 1px solid rgba(215, 226, 234, 0.18);
+      box-shadow: inset 0 0 80px rgba(255, 100, 54, 0.09);
+    }
+
+    .home-copy::after {
+      right: 8%;
+      bottom: -14%;
+      background: radial-gradient(circle at 35% 28%, rgba(255, 138, 104, 0.25), rgba(255, 100, 54, 0.045) 42%, transparent 70%);
+      filter: blur(3px);
+    }
+
+    .home-greet {
+      margin-bottom: 12px;
+      color: rgba(215, 226, 234, 0.66);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+    }
+
+    .home-name {
+      position: relative;
+      z-index: 2;
+      margin: 0;
+      padding: 0 0.08em 0.08em;
+      font-family: "华文行楷", "STXingkai", "华文楷体", "KaiTi", cursive;
+      font-size: clamp(94px, 12.5vw, 180px);
+      font-weight: 400;
+      line-height: 1.02;
+      letter-spacing: 0.035em;
+      color: #d7e2ea;
+      background: linear-gradient(145deg, #f7fafb 8%, #d5dee4 46%, #87919a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+      filter:
+        drop-shadow(0 2px 0 rgba(255, 255, 255, 0.08))
+        drop-shadow(0 24px 36px rgba(0, 0, 0, 0.62));
+      transform:
+        perspective(900px)
+        rotateX(var(--name-rx, 0deg))
+        rotateY(var(--name-ry, 0deg))
+        rotateZ(-1.6deg)
+        translateZ(34px);
+      transform-style: preserve-3d;
+      transform-origin: center;
+      transition: transform 0.75s var(--ease-out);
+      will-change: transform;
+    }
+
+    .home-name::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: none;
+      color: rgba(255, 100, 54, 0.13);
+      -webkit-text-fill-color: rgba(255, 100, 54, 0.13);
+      -webkit-text-stroke: 1px rgba(255, 138, 104, 0.16);
+      transform: translate3d(9px, 12px, -46px);
+      filter: blur(0.35px);
+      pointer-events: none;
+    }
+
+    html.js .home-name.reveal {
+      transform:
+        perspective(900px)
+        rotateX(var(--name-rx, 0deg))
+        rotateY(var(--name-ry, 0deg))
+        rotateZ(-1.6deg)
+        translate3d(0, 18px, 34px);
+      filter:
+        blur(6px)
+        drop-shadow(0 2px 0 rgba(255, 255, 255, 0.08))
+        drop-shadow(0 24px 36px rgba(0, 0, 0, 0.62));
+    }
+
+    html.js .home-name.reveal.is-visible {
+      transform:
+        perspective(900px)
+        rotateX(var(--name-rx, 0deg))
+        rotateY(var(--name-ry, 0deg))
+        rotateZ(-1.6deg)
+        translate3d(0, 0, 34px);
+      filter:
+        blur(0)
+        drop-shadow(0 2px 0 rgba(255, 255, 255, 0.08))
+        drop-shadow(0 24px 36px rgba(0, 0, 0, 0.62));
+    }
+
+    .home-en {
+      margin: clamp(20px, 3vh, 34px) 0 18px;
+      color: rgba(215, 226, 234, 0.55);
+      font-size: 10px;
+      letter-spacing: 0.74em;
+    }
+
+    .home-role {
+      padding-bottom: 0;
+      border-bottom: 0;
+      color: #eef4f7;
+      font-size: clamp(13px, 1.35vw, 17px);
+      letter-spacing: 0.11em;
+    }
+
+    .home-side {
+      display: block;
+      max-width: 1040px;
+      margin-top: clamp(28px, 4vh, 46px);
+      text-align: center;
+    }
+
+    .home-intro {
+      margin: 0 auto;
+      max-width: 72em;
+      color: rgba(215, 226, 234, 0.75);
+      font-size: clamp(13px, 1.05vw, 15.5px);
+      line-height: 1.86;
+      text-align: center;
+    }
+
+    .home-intro strong {
+      color: #eef4f7;
+      text-decoration: none;
+    }
+
+    .capability-marquee {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      overflow: hidden;
+      border-top: 1px solid rgba(215, 226, 234, 0.12);
+      border-bottom: 1px solid rgba(215, 226, 234, 0.12);
+      background: rgba(12, 12, 12, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .capability-track {
+      display: flex;
+      width: max-content;
+      align-items: center;
+      animation: capability-flow 30s linear infinite;
+      will-change: transform;
+    }
+
+    .capability-group {
+      display: flex;
+      flex: none;
+      align-items: center;
+    }
+
+    .capability-group span {
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+      padding: 15px 28px;
+      color: rgba(215, 226, 234, 0.68);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .capability-group span::after {
+      content: "/";
+      color: var(--accent);
+      font-size: 15px;
+    }
+
+    @keyframes capability-flow {
+      to { transform: translate3d(-50%, 0, 0); }
+    }
+
+    /* ---------- 基本信息：数据对象与档案排版 ---------- */
+    #profile .section-head { margin-bottom: clamp(42px, 5vw, 66px) !important; }
+
+    .portrait-card {
+      width: min(100%, 330px);
+    }
+
+    .portrait-disc {
+      border-color: rgba(215, 226, 234, 0.12);
+      background:
+        conic-gradient(from 210deg, transparent, rgba(255, 100, 54, 0.2), transparent 38%),
+        radial-gradient(circle at 35% 25%, rgba(215, 226, 234, 0.12), transparent 45%),
+        rgba(215, 226, 234, 0.025);
+      animation: data-orbit 18s linear infinite;
+    }
+
+    .portrait-card:hover .portrait-disc {
+      border-color: rgba(255, 100, 54, 0.48);
+    }
+
+    @keyframes data-orbit { to { rotate: 1turn; } }
+
+    .portrait-slot {
+      border-color: rgba(215, 226, 234, 0.2);
+      background:
+        radial-gradient(circle at 50% 40%, rgba(255, 100, 54, 0.18), transparent 22%),
+        repeating-radial-gradient(circle at 50% 50%, transparent 0 25px, rgba(215, 226, 234, 0.055) 26px 27px),
+        #101010;
+    }
+
+    .portrait-slot-title {
+      color: #eef4f7;
+      font-size: clamp(24px, 3vw, 38px);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+    }
+
+    .portrait-slot-sub { color: var(--accent-strong); }
+
+    .profile-group-head {
+      border-bottom-color: rgba(215, 226, 234, 0.15);
+    }
+
+    .profile-facts,
+    .profile-education-card,
+    .profile-skills-card {
+      border-color: rgba(215, 226, 234, 0.12);
+      background: rgba(215, 226, 234, 0.018);
+      box-shadow: inset 0 1px 0 rgba(215, 226, 234, 0.035);
+    }
+
+    .profile-fact:hover,
+    .profile-education-card:hover,
+    .profile-skills-card:hover {
+      border-color: rgba(255, 100, 54, 0.42);
+    }
+
+    /* ---------- 实习经历：服务目录式大日期叙事 ---------- */
+    .timeline {
+      max-width: 1080px;
+      margin-inline: auto;
+      border-top: 1px solid rgba(215, 226, 234, 0.15);
+    }
+
+    .timeline::before { display: none; }
+
+    .exp-item {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.45fr) minmax(0, 1fr);
+      gap: clamp(44px, 8vw, 112px);
+      padding: clamp(52px, 7vw, 86px) 0;
+      border-bottom: 1px solid rgba(215, 226, 234, 0.15);
+    }
+
+    .exp-time {
+      align-self: start;
+      padding: 0;
+      text-align: left;
+    }
+
+    .exp-year {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(72px, 9vw, 132px);
+      font-weight: 900;
+      line-height: 0.72;
+      letter-spacing: -0.09em;
+      color: #d7e2ea;
+      background: linear-gradient(180deg, #edf3f6, #66717a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .exp-range {
+      display: block;
+      margin-top: 22px;
+      color: var(--accent-strong);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+    }
+
+    .exp-card {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .exp-card:hover { translate: 0; box-shadow: none; }
+    .exp-node { display: none; }
+
+    .exp-company {
+      font-size: clamp(30px, 4vw, 54px);
+      font-weight: 800;
+      letter-spacing: -0.045em;
+    }
+
+    /* ---------- 项目：滚动堆叠卡片 ---------- */
+    #projects { overflow: visible; }
+
+    .projects-grid {
+      display: block;
+      max-width: 1120px;
+      margin-inline: auto;
+      counter-reset: project-card;
+    }
+
+    .project,
+    .project-featured {
+      position: sticky;
+      top: calc(var(--nav-h) + 22px + (var(--stack-order, 0) * 10px));
+      grid-column: auto !important;
+      min-height: clamp(360px, 58vh, 620px);
+      margin-bottom: clamp(90px, 13vh, 150px);
+      padding: clamp(30px, 4.5vw, 58px);
+      overflow: hidden;
+      border: 1px solid rgba(215, 226, 234, 0.28);
+      border-radius: var(--r-container);
+      background:
+        radial-gradient(70% 90% at 100% 0%, rgba(255, 100, 54, 0.1), transparent 55%),
+        rgba(12, 12, 12, 0.965);
+      box-shadow: 0 35px 80px rgba(0, 0, 0, 0.46), inset 0 1px 0 rgba(215, 226, 234, 0.09);
+      counter-increment: project-card;
+      isolation: isolate;
+    }
+
+    .project:nth-child(1) { --stack-order: 0; }
+    .project:nth-child(2) { --stack-order: 1; }
+    .project:nth-child(3) { --stack-order: 2; }
+    .project:nth-child(4) { --stack-order: 3; }
+    .project:nth-child(5) { --stack-order: 4; }
+
+    .project::after {
+      content: "0" counter(project-card);
+      position: absolute;
+      right: clamp(22px, 4vw, 54px);
+      bottom: clamp(12px, 2vw, 24px);
+      z-index: -1;
+      color: rgba(215, 226, 234, 0.045);
+      font-family: var(--font-display);
+      font-size: clamp(90px, 16vw, 220px);
+      font-weight: 900;
+      line-height: 0.72;
+      letter-spacing: -0.08em;
+    }
+
+    .project:hover {
+      translate: 0 -4px;
+      border-color: rgba(255, 100, 54, 0.58);
+      box-shadow: 0 44px 94px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(215, 226, 234, 0.11);
+    }
+
+    .project h3,
+    .project-featured h3 {
+      max-width: 13em;
+      font-size: clamp(34px, 5vw, 68px);
+      font-weight: 850;
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      color: #eef4f7;
+    }
+
+    .project-summary {
+      max-width: 52em;
+      color: rgba(215, 226, 234, 0.67);
+      font-size: clamp(14px, 1.2vw, 17px);
+      line-height: 1.8;
+    }
+
+    .project-tags li,
+    .tech-list li,
+    .exp-skills li,
+    .chip {
+      border-color: rgba(255, 100, 54, 0.35);
+      color: var(--accent-strong);
+      background: rgba(255, 100, 54, 0.055);
+    }
+
+    .project-links a {
+      min-height: 42px;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    /* ---------- 联系区：简洁大结尾 ---------- */
+    #contact {
+      min-height: 100dvh;
+      text-align: center;
+    }
+
+    #contact .section-head h2 {
+      font-size: clamp(66px, 11vw, 156px);
+    }
+
+    .contact-panel {
+      max-width: 1120px;
+      width: 100%;
+      margin-inline: auto;
+      padding: clamp(32px, 5vw, 66px);
+      border-color: rgba(215, 226, 234, 0.18);
+      background: rgba(215, 226, 234, 0.025);
+      text-align: left;
+    }
+
+    .contact-item:hover {
+      border-color: var(--accent);
+      background: rgba(255, 100, 54, 0.06);
+    }
+
+    .contact-item strong { color: #eef4f7; }
+
+    @media (max-width: 980px) {
+      .home-name { font-size: clamp(88px, 17vw, 158px); }
+      .home-side { max-width: 780px; }
+      .profile-split { grid-template-columns: minmax(0, 290px) minmax(0, 1fr); }
+      .exp-item { grid-template-columns: minmax(150px, 0.38fr) 1fr; gap: 42px; }
+    }
+
+    @media (max-width: 767px) {
+      .nav { width: min(calc(100% - 32px), 1280px); }
+
+      .section {
+        padding-top: 86px;
+        padding-bottom: 104px;
+      }
+
+      .section-head { margin-bottom: 46px !important; }
+      .section-head h2 { font-size: clamp(48px, 15vw, 70px); }
+
+      .home-inner {
+        width: min(calc(100% - 32px), 1180px);
+        padding-top: 48px;
+        padding-bottom: 34px;
+      }
+
+      .home-name {
+        padding-bottom: 0.12em;
+        font-size: clamp(76px, 27vw, 116px);
+        line-height: 1.04;
+      }
+
+      .home-copy::before { left: -12%; top: 5%; }
+      .home-copy::after { right: -14%; bottom: 4%; }
+      .home-en { letter-spacing: 0.5em; }
+
+      .home-side {
+        text-align: center;
+      }
+
+      .home-intro {
+        font-size: 13px;
+        line-height: 1.75;
+      }
+
+      .capability-group span { padding: 12px 20px; }
+
+      .profile-split { grid-template-columns: 1fr; }
+      .portrait-card { width: min(76vw, 286px); }
+
+      .exp-item {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding: 54px 0;
+      }
+
+      .exp-year { font-size: clamp(66px, 23vw, 98px); }
+      .exp-range { margin-top: 15px; }
+
+      .project,
+      .project-featured {
+        position: relative;
+        top: auto;
+        min-height: 0;
+        margin-bottom: 18px;
+        padding: 26px 22px;
+      }
+
+      .project::after { font-size: 108px; }
+      .project h3,
+      .project-featured h3 { font-size: clamp(30px, 10vw, 44px); }
+      .contact-panel { padding: 24px 20px; }
+    }
+
+    /* 所有版块主标题使用同一中文排版规则，预留字形上下空间避免裁切 */
+    .section-head h2,
+    #profile .section-head h2,
+    #contact .section-head h2 {
+      display: block;
+      margin: 0 0 16px;
+      padding: 0.1em 0 0.12em;
+      overflow: visible;
+      font-family: "Segoe UI Variable Display", "Microsoft YaHei UI", "DengXian", "Microsoft YaHei", sans-serif;
+      font-size: clamp(46px, 5vw, 72px);
+      font-weight: 720;
+      line-height: 1.12;
+      letter-spacing: -0.045em;
+      text-transform: none;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 767px) {
+      .section-head h2,
+      #profile .section-head h2,
+      #contact .section-head h2 {
+        margin-bottom: 12px;
+        padding-block: 0.08em 0.12em;
+        font-size: clamp(38px, 11vw, 48px);
+        line-height: 1.14;
+        letter-spacing: -0.035em;
+      }
+    }
+
+    .exp-company-intro {
+      max-width: 72em;
+      margin: 0 0 28px;
+      padding-left: 16px;
+      border-left: 2px solid var(--accent);
+      color: var(--text-2);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    #experience .field-label {
+      color: var(--accent-strong);
+      font-size: 14px;
+      letter-spacing: 0.08em;
+    }
+
+    #experience .exp-period {
+      display: inline;
+      white-space: nowrap;
+      color: var(--text-2);
+      font-family: var(--font-mono);
+      font-size: inherit;
+      font-weight: 500;
+      line-height: inherit;
+      letter-spacing: 0.025em;
+    }
+
+    #experience .exp-item {
+      grid-template-columns: minmax(0, 1fr);
+      padding-top: clamp(24px, 3vw, 40px);
+      border-bottom: 0;
+    }
+
+    #experience .exp-company {
+      font-size: clamp(28px, 3.8vw, 52px);
+    }
+
+    #experience .exp-role {
+      color: var(--text-2);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    #experience .exp-work {
+      display: grid;
+      gap: 28px;
+      margin-bottom: 28px;
+    }
+
+    #experience .exp-work-item h5 {
+      margin: 0 0 9px;
+      color: var(--text-1);
+      font-size: 15.5px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    #experience .exp-work-item p {
+      max-width: 76em;
+      margin: 0;
+      color: var(--text-2);
+      font-size: 15px;
+      line-height: 1.85;
+      text-align: justify;
+      text-justify: inter-ideograph;
+    }
+
+    #experience .exp-skills {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .capability-track,
+      .portrait-disc,
+      .home-hero { animation: none; }
+      .project,
+      .project-featured { position: relative; top: auto; }
+      .home-name { transform: none; transition: none; }
+      .hero-video {
+        transition: none;
+        transform: none;
+        filter: saturate(0.68) contrast(1.1) brightness(0.6);
+      }
+      .hero-particles { opacity: 0.46; }
+      html.js .home-name.reveal,
+      html.js .home-name.reveal.is-visible {
+        transform: none;
+        filter: none;
+      }
+    }
+  </style>
 </head>
 <body>
   <a class="skip" href="#main">跳到主要内容</a>
@@ -2407,10 +3216,14 @@
     <!-- ====================== 00 / 首页 ====================== -->
     <section class="panel" id="home">
       <div class="home-hero">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="assets/hero-bg.jpg" aria-hidden="true" tabindex="-1">
+          <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260818_072341_50851634-bbc3-4c33-9acc-7647d4db44aa.mp4" type="video/mp4">
+        </video>
+        <canvas class="hero-particles" aria-hidden="true"></canvas>
         <div class="home-inner">
           <div class="home-copy">
             <p class="home-greet reveal">你好，我是</p>
-            <h1 class="home-name reveal" style="--d:1">何涛</h1>
+            <h1 class="home-name reveal" style="--d:1" data-text="何涛">何涛</h1>
             <p class="home-en reveal" style="--d:2" data-decode>HE TAO</p>
             <p class="home-role reveal" style="--d:3">西北大学·应用统计·硕士</p>
           </div>
@@ -2421,6 +3234,17 @@
             </p>
           </div>
         </div>
+
+        <div class="capability-marquee" aria-label="核心能力">
+          <div class="capability-track">
+            <div class="capability-group">
+              <span>Data Analysis</span><span>Product Thinking</span><span>Python</span><span>SQL</span><span>AI Agent</span><span>Time Series</span><span>RAG</span>
+            </div>
+            <div class="capability-group" aria-hidden="true">
+              <span>Data Analysis</span><span>Product Thinking</span><span>Python</span><span>SQL</span><span>AI Agent</span><span>Time Series</span><span>RAG</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -2428,7 +3252,7 @@
     <section class="section shell panel" id="profile">
       <div class="section-head reveal">
         <h2>基本信息</h2>
-        <p>证件照、个人资料、教育背景与技能信息</p>
+        <p>个人资料、教育背景与技能信息</p>
       </div>
 
       <div class="profile-split">
@@ -2560,78 +3384,50 @@
     <section class="section shell panel" id="experience">
       <div class="section-head reveal">
         <h2>实习经历</h2>
-        <p>以时间线呈现每段实习中的职责、工作内容与量化成果</p>
       </div>
 
       <div class="timeline">
-        <!-- TODO: 替换为真实公司、时间、岗位与成果 -->
         <article class="exp-item reveal">
-          <div class="exp-time">
-            <span class="exp-year">2026</span>
-            <span class="exp-range">03 - 09</span>
-          </div>
           <div class="exp-card glass spot">
             <span class="exp-node" aria-hidden="true"></span>
-            <h3 class="exp-company">[公司名称]</h3>
+            <h3 class="exp-company">美林数据技术股份有限公司</h3>
+
+            <h4 class="field-label exp-company-label">公司介绍</h4>
+            <p class="exp-company-intro">
+              聚焦工业数据治理与智能分析，以“数据治理+人工智能”双引擎，提供高质量数据集、数据治理、数据分析挖掘、AI工程化与行业可信AI应用全链路解决方案。自主研发Tempo产品体系：Tempo DATA覆盖数据工厂、主数据管理和数据治理；Tempo AI覆盖商业智能、人工智能、大模型应用及AI工程化；Tempo DO支撑数智人才与产业大脑。方案广泛应用于高端装备制造、智慧能源与电网、产教融合，落地数据中台、数字孪生智能体、设备运维智能体及高校实验实训平台。公司为国家级专精特新“小巨人”，连续八年入选“中国大数据企业50强”，曾居工业大数据企业排行榜榜首；并与华为合作打造基于昇腾计算、盘古大模型的一体化方案，TempoAI平台入选中国信通院“铸基计划”全景图，覆盖人工智能、数据分析、智能体三大领域。
+            </p>
+
+            <h4 class="field-label">实习岗位</h4>
             <p class="exp-role">
-              <strong>[岗位名称]</strong>
+              <time class="exp-period" datetime="2026-07/2026-10">2026.07-2026.10</time>
               <span class="sep" aria-hidden="true">|</span>
-              <span>[部门]</span>
+              <span>数据分析应用中心</span>
+              <span class="sep" aria-hidden="true">|</span>
+              <span>数据产品实习生</span>
             </p>
 
             <h4 class="field-label">工作内容</h4>
-            <ul class="exp-list">
-              <li>[在此填写工作内容，例如研究问题拆解与分析方案设计]</li>
-              <li>[在此填写工作内容，例如指标体系建设与数据分析]</li>
-              <li>[在此填写工作内容，例如 AI 能力的落地与效果验证]</li>
-            </ul>
+            <div class="exp-work">
+              <section class="exp-work-item" aria-labelledby="intern-project-one">
+                <h5 id="intern-project-one">面向工程企业的智能化平台</h5>
+                <p>针对某工程企业业务文档复杂、知识分散且数据查询高度依赖人工、历史知识经验难以沉淀复用的问题，构建数智化管理平台。主要参与负责了需求调研与产品建设，将业务诉求拆解为文档解析、结构化入库和智能问答三类核心能力，并参与讨论规划了文档解析、结构化抽取、知识检索、智能问答全链路方案。同时参与梳理核心环节开发，梳理实体关系及模块边界，协同完成数据库Schema、字段映射与业务规则设计，并参与RAG能力建设，通过样例集构建、Prompt优化、Schema、业务术语、相似问句检索增强及SQL执行纠错提升问答效果，进一步搭建典型业务测试集和以SQL准确率为核心的评测机制，基于bad case持续迭代产品策略，并协调产品、研发与数据团队统一需求口径和数据标准，推动数据库、文档解析及智能问答模块完成联调与持续优化。最终实现非结构化文档、结构化数据与图片资料的统一沉淀和关联查询，支持用户通过自然语言快速获取业务信息并追溯原始依据，降低人工检索与取数成本，推动历史知识经验由分散存储向可检索、可复用的企业知识资产。</p>
+              </section>
 
-            <h4 class="field-label">工作成果</h4>
-            <ul class="metrics">
-              <li class="metric"><strong>[+xx%]</strong><span>[成果说明]</span></li>
-              <li class="metric"><strong>[xx 万]</strong><span>[成果说明]</span></li>
-              <li class="metric"><strong>[xx 个]</strong><span>[成果说明]</span></li>
-            </ul>
+              <section class="exp-work-item" aria-labelledby="intern-project-two">
+                <h5 id="intern-project-two">数字监理平台</h5>
+                <p>针对企业项目建设中进度、质量、经费等数据分散、项目状态难以统一监控的问题，参与数字监理平台的数据看板规划，服务项目全过程监控与风险管控。对接项目管理、质量、财务等业务部门，围绕总体态势、进度、质量、经费、安全、保密及供应商管理7大业务域，梳理指标口径、分析维度、预警阈值和钻取逻辑。使用SQL整合项目管理系统、线下上传表及厂商数据，设计源数据、指标加工、看板展示三层数据模型，并利用Python完成计划进度预测与延期风险计算。最终沉淀指标字典、数据模型、SQL加工脚本及部署材料，支撑项目例会、专项调度和问题督办，实现项目关键状态的统一监控、异常预警与明细追溯。</p>
+              </section>
+            </div>
 
             <ul class="exp-skills">
-              <li>AI Agent</li>
+              <li>需求分析</li>
               <li>数据分析</li>
-              <li>模型评估</li>
-            </ul>
-          </div>
-        </article>
-
-        <!-- TODO: 替换为真实公司、时间、岗位与成果 -->
-        <article class="exp-item reveal" style="--d:1">
-          <div class="exp-time">
-            <span class="exp-year">2025</span>
-            <span class="exp-range">07 - 12</span>
-          </div>
-          <div class="exp-card glass spot">
-            <span class="exp-node" aria-hidden="true"></span>
-            <h3 class="exp-company">[公司名称]</h3>
-            <p class="exp-role">
-              <strong>[岗位名称]</strong>
-              <span class="sep" aria-hidden="true">|</span>
-              <span>[部门]</span>
-            </p>
-
-            <h4 class="field-label">工作内容</h4>
-            <ul class="exp-list">
-              <li>[在此填写工作内容]</li>
-              <li>[在此填写工作内容]</li>
-            </ul>
-
-            <h4 class="field-label">工作成果</h4>
-            <ul class="metrics">
-              <li class="metric"><strong>[+xx%]</strong><span>[成果说明]</span></li>
-              <li class="metric"><strong>[xx 万]</strong><span>[成果说明]</span></li>
-            </ul>
-
-            <ul class="exp-skills">
-              <li>SQL</li>
-              <li>数据可视化</li>
               <li>指标体系</li>
+              <li>产品设计</li>
+              <li>数据库</li>
+              <li>RAG</li>
+              <li>看板</li>
+              <li>Prompt</li>
             </ul>
           </div>
         </article>
@@ -2921,11 +3717,18 @@
         document.body.classList.add("has-pointer");
 
         var px = 0, py = 0, rafId = 0, spotEl = null;
+        var heroName = document.querySelector(".home-name");
 
         function flush() {
           rafId = 0;
           root.style.setProperty("--cursor-x", px + "px");
           root.style.setProperty("--cursor-y", py + "px");
+          var nx = (px / Math.max(window.innerWidth, 1)) - 0.5;
+          var ny = (py / Math.max(window.innerHeight, 1)) - 0.5;
+          if (heroName) {
+            heroName.style.setProperty("--name-rx", (-ny * 2.5).toFixed(2) + "deg");
+            heroName.style.setProperty("--name-ry", (nx * 3.5).toFixed(2) + "deg");
+          }
           if (spotEl) {
             var r = spotEl.getBoundingClientRect();
             spotEl.style.setProperty("--mx", (px - r.left) + "px");
@@ -2943,6 +3746,7 @@
           var next = event.target.closest(".spot");
           if (next !== spotEl) spotEl = next;
         }, { passive: true });
+
       }
 
       /* ---------------- 名称解码效果 ---------------- */
@@ -2968,6 +3772,101 @@
             }
           }, 34);
         });
+      }
+
+      /* ---------------- 首页视频背景：加载成功后柔和显现，失败时保留本地背景图 ---------------- */
+      var heroVideo = document.querySelector(".hero-video");
+      if (heroVideo) {
+        if (reduceMotion) {
+          heroVideo.pause();
+          heroVideo.removeAttribute("autoplay");
+        } else {
+          var revealHeroVideo = function () { heroVideo.classList.add("is-ready"); };
+          if (heroVideo.readyState >= 2) revealHeroVideo();
+          else {
+            heroVideo.addEventListener("loadeddata", revealHeroVideo, { once: true });
+            heroVideo.addEventListener("canplay", revealHeroVideo, { once: true });
+          }
+        }
+      }
+
+      /* ---------------- 空间尘埃粒子：视频上方、文字下方的轻量 Canvas 层 ---------------- */
+      var particleCanvas = document.querySelector(".hero-particles");
+      var particleHost = document.querySelector(".home-hero");
+      if (particleCanvas && particleHost) {
+        var particleContext = particleCanvas.getContext("2d");
+        var particleWidth = 0;
+        var particleHeight = 0;
+        var particleRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+        var particles = [];
+        var particleFrame = 0;
+
+        function createParticles() {
+          var area = particleWidth * particleHeight;
+          var maxCount = window.innerWidth <= 767 ? 300 : 900;
+          var count = Math.min(maxCount, Math.max(180, Math.round(area / 1850)));
+          particles = [];
+          for (var i = 0; i < count; i++) {
+            particles.push({
+              x: Math.random() * particleWidth,
+              y: Math.random() * particleHeight,
+              radius: 0.35 + Math.random() * 1.05,
+              alpha: 0.12 + Math.random() * 0.62,
+              depth: 0.3 + Math.random() * 0.9,
+              phase: Math.random() * Math.PI * 2,
+              speed: 0.35 + Math.random() * 0.85
+            });
+          }
+        }
+
+        function sizeParticleCanvas() {
+          var rect = particleHost.getBoundingClientRect();
+          particleWidth = Math.max(1, Math.round(rect.width));
+          particleHeight = Math.max(1, Math.round(rect.height));
+          particleCanvas.width = Math.round(particleWidth * particleRatio);
+          particleCanvas.height = Math.round(particleHeight * particleRatio);
+          particleContext.setTransform(particleRatio, 0, 0, particleRatio, 0, 0);
+          createParticles();
+          drawParticles(0);
+        }
+
+        function drawParticles(time) {
+          particleContext.clearRect(0, 0, particleWidth, particleHeight);
+          for (var i = 0; i < particles.length; i++) {
+            var particle = particles[i];
+            var drift = Math.sin(time * 0.00018 * particle.speed + particle.phase);
+            var wave = Math.sin(particle.x * 0.007 + time * 0.00032 + particle.phase) * 11 * particle.depth;
+            var x = particle.x + drift * 8 * particle.depth;
+            var y = particle.y + wave;
+            var twinkle = 0.58 + Math.sin(time * 0.0011 + particle.phase) * 0.42;
+            var edgeFade = Math.min(1, y / 90, (particleHeight - y) / 90);
+            var alpha = particle.alpha * twinkle * Math.max(0.12, edgeFade);
+
+            particleContext.beginPath();
+            particleContext.arc(x, y, particle.radius * particle.depth, 0, Math.PI * 2);
+            particleContext.fillStyle = "rgba(220, 229, 235," + alpha.toFixed(3) + ")";
+            particleContext.fill();
+          }
+        }
+
+        function animateParticles(time) {
+          drawParticles(time);
+          particleFrame = window.requestAnimationFrame(animateParticles);
+        }
+
+        sizeParticleCanvas();
+        if (!reduceMotion) particleFrame = window.requestAnimationFrame(animateParticles);
+
+        if (window.ResizeObserver) {
+          var particleResizeObserver = new ResizeObserver(sizeParticleCanvas);
+          particleResizeObserver.observe(particleHost);
+        } else {
+          window.addEventListener("resize", sizeParticleCanvas, { passive: true });
+        }
+
+        window.addEventListener("pagehide", function () {
+          if (particleFrame) window.cancelAnimationFrame(particleFrame);
+        }, { once: true });
       }
 
       /* ---------------- 证件照：加载成功后切换到有照片状态 ---------------- */
