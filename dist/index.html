@@ -1315,7 +1315,8 @@
       .info-card:nth-child(1),
       .info-card:nth-child(4) { grid-column: span 2; }
 
-      .edu-fields { grid-template-columns: 1fr; }
+      .edu-fields,
+      .profile-education-card .edu-fields { grid-template-columns: 1fr; }
       .edu-fields > div:nth-child(n) { grid-column: span 1; }
 
       .skill-groups { grid-template-columns: 1fr; }
@@ -1741,41 +1742,191 @@
     .education,
     .skills { margin-top: 18px; padding: clamp(30px, 4vw, 52px); }
 
-    /* 基本信息：个人资料优先，教育履历随后 */
+    /* ==========================================================
+       基本信息：左侧证件照 + 右侧资料档案
+       ========================================================== */
+    .profile-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(30px, 4vw, 44px);
+    }
+    .portrait-column,
+    .profile-info-column { min-width: 0; }
+
+    /* ---------- 证件照卡：圆形头像 + 环托（未放入时显示取景空态） ---------- */
+    .portrait-card {
+      position: relative;
+      display: grid;
+      width: min(100%, 316px);
+      margin: 0 auto;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 50%;
+    }
+    /* 与 .reveal 进入动效合并声明，保证 hover 的位移也有过渡 */
+    html.js .portrait-card.reveal {
+      transition:
+        opacity var(--dur-slow) var(--ease-out),
+        transform var(--dur-slow) var(--ease-out),
+        filter var(--dur-slow) var(--ease-out),
+        translate 0.45s var(--ease-out);
+      transition-delay: calc(var(--d, 0) * 65ms);
+    }
+    .portrait-card:hover { translate: 0 -3px; }
+
+    /* 外环盘面：圆形照片的托底层次 */
+    .portrait-disc {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background:
+        radial-gradient(120% 120% at 30% 16%, rgba(255, 255, 255, 0.075), transparent 54%),
+        rgba(255, 255, 255, 0.028);
+      border: 1px solid rgba(255, 255, 255, 0.075);
+      transition: border-color 0.45s ease;
+    }
+    .portrait-card:hover .portrait-disc { border-color: rgba(17, 171, 176, 0.42); }
+
+    .portrait-slot {
+      position: relative;
+      display: flex;
+      width: 84%;
+      aspect-ratio: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px dashed rgba(255, 255, 255, 0.16);
+      border-radius: 50%;
+      background:
+        radial-gradient(62% 44% at 50% 42%, rgba(17, 171, 176, 0.085), transparent 72%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0.006));
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
+    }
+    .portrait-slot::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+      -webkit-mask-image: radial-gradient(86% 78% at 50% 50%, #000 12%, transparent 82%);
+      mask-image: radial-gradient(86% 78% at 50% 50%, #000 12%, transparent 82%);
+      transition: opacity 0.5s ease;
+    }
+    /* 证件照：把 portrait.jpg 放进 assets 目录即自动显示，未放入时保持空态 */
+    .portrait-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 30%;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .portrait-target,
+    .portrait-slot-title,
+    .portrait-slot-sub,
+    .portrait-slot-hint { transition: opacity 0.4s ease; }
+    .portrait-slot.has-photo {
+      border-style: solid;
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+    .portrait-slot.has-photo .portrait-photo { opacity: 1; }
+    .portrait-slot.has-photo::before { opacity: 0; }
+    .portrait-slot.has-photo .portrait-target,
+    .portrait-slot.has-photo .portrait-slot-title,
+    .portrait-slot.has-photo .portrait-slot-sub,
+    .portrait-slot.has-photo .portrait-slot-hint { opacity: 0; }
+    .portrait-target {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(63, 214, 219, 0.42);
+      border-radius: 50%;
+    }
+    .portrait-target::before,
+    .portrait-target::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+    }
+    .portrait-target::before {
+      top: 50%;
+      left: -9px;
+      right: -9px;
+      height: 1px;
+      transform: translateY(-50%);
+      background: linear-gradient(90deg, transparent, rgba(63, 214, 219, 0.5), transparent);
+    }
+    .portrait-target::after {
+      left: 50%;
+      top: -9px;
+      bottom: -9px;
+      width: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, transparent, rgba(63, 214, 219, 0.5), transparent);
+    }
+    .portrait-slot-title {
+      margin: 0;
+      color: var(--text-2);
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 620;
+      letter-spacing: 0.02em;
+    }
+    .portrait-slot-sub {
+      margin: 5px 0 0;
+      color: var(--text-3);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .portrait-slot-hint {
+      min-width: 92px;
+      margin: 18px 0 0;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-3);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-align: center;
+    }
+
+    /* ---------- 档案分组标题 ---------- */
     .profile-group-head {
       display: flex;
-      align-items: flex-end;
+      align-items: baseline;
       justify-content: space-between;
       gap: 24px;
-      margin-bottom: 20px;
-      padding-bottom: 14px;
+      margin: 0 0 13px;
+      padding-bottom: 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.13);
     }
     .profile-group-head h3 {
       margin: 0;
       font-family: var(--font-display);
-      font-size: clamp(24px, 3vw, 36px);
+      font-size: clamp(19px, 1.6vw, 23px);
       font-weight: 620;
-      line-height: 1;
-      letter-spacing: -0.035em;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
     }
     .profile-group-head p {
-      display: flex;
-      align-items: center;
-      gap: 10px;
       margin: 0;
       color: var(--text-3);
       font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.12em;
+      font-size: 9.5px;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
     }
-    .profile-group-head p span { color: var(--accent-strong); }
-    .profile-group-head--education { margin-top: clamp(72px, 9vw, 124px); }
+    .profile-group-head--stack { margin-top: clamp(34px, 3.6vw, 52px); }
 
     .profile-facts {
       display: grid;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1px;
       margin: 0;
       overflow: hidden;
@@ -1785,20 +1936,17 @@
     }
     .profile-fact {
       position: relative;
-      grid-column: span 5;
       min-width: 0;
-      min-height: 178px;
-      padding: clamp(24px, 3.4vw, 42px);
+      min-height: clamp(96px, 7.4vw, 116px);
+      padding: clamp(16px, 1.5vw, 22px);
       background: rgba(18, 18, 17, 0.92);
       transition: background-color 420ms ease;
     }
-    .profile-fact:nth-child(2),
-    .profile-fact:nth-child(4) { grid-column: span 7; }
     .profile-fact::after {
       content: "";
       position: absolute;
-      left: clamp(24px, 3.4vw, 42px);
-      right: clamp(24px, 3.4vw, 42px);
+      left: clamp(16px, 1.5vw, 22px);
+      right: clamp(16px, 1.5vw, 22px);
       bottom: 0;
       height: 2px;
       background: var(--accent);
@@ -1806,21 +1954,21 @@
       transform-origin: left;
       transition: transform 520ms var(--ease-out);
     }
-    .profile-fact:hover { background: rgba(255, 107, 44, 0.055); }
+    .profile-fact:hover { background: rgba(17, 171, 176, 0.05); }
     .profile-fact:hover::after { transform: scaleX(1); }
     .profile-fact dt {
       display: flex;
       align-items: baseline;
-      gap: 12px;
-      margin-bottom: clamp(26px, 3vw, 42px);
+      gap: 10px;
+      margin-bottom: clamp(12px, 1.1vw, 16px);
       color: var(--text-2);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
     }
     .profile-fact dt small {
       color: var(--text-3);
       font-family: var(--font-mono);
-      font-size: 9px;
+      font-size: 8.5px;
       font-weight: 500;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -1830,11 +1978,11 @@
       overflow-wrap: anywhere;
       color: var(--text-1);
       font-family: var(--font-display);
-      font-size: clamp(26px, 3.35vw, 46px);
+      font-size: clamp(17px, 1.6vw, 23px);
       font-variant-numeric: tabular-nums;
       font-weight: 560;
-      line-height: 1.06;
-      letter-spacing: -0.035em;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
     }
     .profile-fact a {
       transition: color var(--dur-fast) ease;
@@ -1844,243 +1992,137 @@
     .profile-education-card {
       margin-top: 0;
       overflow: hidden;
-      padding: clamp(30px, 4.5vw, 60px);
+      padding: clamp(22px, 2.4vw, 34px);
       border: 1px solid rgba(255, 255, 255, 0.11);
       border-radius: 2px;
       background:
-        linear-gradient(105deg, rgba(255, 107, 44, 0.07), transparent 34%),
+        linear-gradient(115deg, rgba(17, 171, 176, 0.06), transparent 38%),
         rgba(18, 18, 17, 0.76);
       box-shadow: 0 32px 90px rgba(0, 0, 0, 0.2);
-      transition: border-color 420ms ease, background-color 420ms ease;
     }
-    .profile-education-card:hover { border-color: rgba(255, 107, 44, 0.38); }
+    html.js .profile-education-card.reveal {
+      transition:
+        opacity var(--dur-slow) var(--ease-out),
+        transform var(--dur-slow) var(--ease-out),
+        filter var(--dur-slow) var(--ease-out),
+        border-color 0.45s ease;
+      transition-delay: calc(var(--d, 0) * 65ms);
+    }
+    .profile-education-card:hover { border-color: rgba(17, 171, 176, 0.38); }
     .profile-education-card .edu-head {
       align-items: flex-end;
-      padding-bottom: clamp(24px, 3vw, 34px);
+      padding-bottom: clamp(14px, 1.6vw, 20px);
     }
+    /* 校名与“教育背景”分组标题同字号 */
     .profile-education-card .edu-head h3 {
-      margin-bottom: 9px;
-      font-size: clamp(31px, 4.6vw, 56px);
+      margin-bottom: 8px;
+      font-size: clamp(19px, 1.6vw, 23px);
       font-weight: 620;
-      line-height: 1;
-      letter-spacing: -0.045em;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
     }
     .profile-education-card .edu-badge {
-      translate: 0 -4px;
+      translate: 0 -3px;
       border-radius: 2px;
       background: var(--accent);
       color: var(--accent-ink);
     }
     .profile-education-card .edu-major {
       color: var(--text-2);
-      font-size: clamp(14px, 1.5vw, 17px);
+      font-size: clamp(13.5px, 1.2vw, 15.5px);
       letter-spacing: 0.025em;
     }
     .profile-education-card .edu-time {
-      padding-bottom: 3px;
+      padding-bottom: 2px;
       color: var(--accent-strong);
-      font-size: 12px;
+      font-size: 11.5px;
     }
     .profile-education-card .edu-fields {
-      gap: clamp(24px, 3vw, 40px) clamp(30px, 5vw, 72px);
-      margin-top: clamp(28px, 4vw, 48px);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(18px, 2vw, 26px) clamp(22px, 3vw, 40px);
+      margin-top: clamp(18px, 2.2vw, 26px);
     }
     .profile-education-card .edu-fields > div {
-      padding-top: 15px;
+      padding-top: 13px;
       border-top: 1px solid rgba(255, 255, 255, 0.12);
     }
-    .profile-education-card .edu-fields > div:nth-child(1) { grid-column: span 4; }
-    .profile-education-card .edu-fields > div:nth-child(2) { grid-column: span 8; }
-    .profile-education-card .edu-fields > div:nth-child(3) { grid-column: span 5; }
-    .profile-education-card .edu-fields > div:nth-child(4) { grid-column: span 7; }
     .profile-education-card .edu-fields dt {
-      margin-bottom: 9px;
+      margin-bottom: 8px;
       color: var(--accent-strong);
       font-family: var(--font-sans);
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 650;
       letter-spacing: 0.05em;
     }
     .profile-education-card .edu-fields dd {
       max-width: none;
       color: var(--text-2);
-      font-size: 14.5px;
-      line-height: 1.9;
+      font-size: 17px;
+      line-height: 1.85;
     }
     .profile-education-card .edu-fields .pub {
-      margin-bottom: 7px;
+      display: block;
+      width: fit-content;
+      margin: 0 0 7px;
+      padding: 3px 10px;
       border-radius: 2px;
+      font-size: 11.5px;
     }
 
-    /* 一屏履历：桌面端在同一视口内呈现资料、教育与技能 */
-    .profile-detail-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.9fr) minmax(270px, 0.8fr);
-      gap: 14px;
-      margin-top: 18px;
-    }
-    .profile-group-head--education { margin-top: 0; }
-    .profile-education-column,
-    .profile-skills-column { min-width: 0; }
+    /* 技能卡 */
     .profile-skills-card {
-      height: calc(100% - 37px);
       margin: 0;
-      padding: 22px;
+      padding: clamp(20px, 2.2vw, 30px);
       border: 1px solid rgba(255, 255, 255, 0.11);
       border-radius: 2px;
       background: rgba(18, 18, 17, 0.76);
       box-shadow: 0 26px 70px rgba(0, 0, 0, 0.18);
     }
+    html.js .profile-skills-card.reveal {
+      transition:
+        opacity var(--dur-slow) var(--ease-out),
+        transform var(--dur-slow) var(--ease-out),
+        filter var(--dur-slow) var(--ease-out),
+        border-color 0.45s ease;
+      transition-delay: calc(var(--d, 0) * 65ms);
+    }
+    .profile-skills-card:hover { border-color: rgba(17, 171, 176, 0.34); }
     .profile-skills-card .skill-groups {
       grid-template-columns: 1fr;
-      gap: 18px;
+      gap: clamp(16px, 1.8vw, 22px);
     }
     .profile-skills-card .skill-group:nth-child(n) { grid-column: 1; }
     .profile-skills-card .skill-group h4 {
-      margin-bottom: 8px;
-      font-size: 9.5px;
+      margin-bottom: 10px;
+      font-size: 14px;
     }
-    .profile-skills-card .chips { gap: 6px; }
+    .profile-skills-card .chips { gap: 8px; }
     .profile-skills-card .chip {
-      padding: 5px 10px;
-      font-size: 11.5px;
+      padding: 7px 14px;
+      font-size: 16.5px;
     }
 
+    /* 平板及以上：证件照左栏与档案列并排，随页面整体滚动（不悬浮） */
+    @media (min-width: 768px) {
+      .profile-split {
+        grid-template-columns: clamp(240px, 30vw, 320px) minmax(0, 1fr);
+        gap: clamp(20px, 2.6vw, 34px);
+      }
+      .portrait-card { width: 100%; }
+    }
+    /* 桌面端：证件照栏加宽 */
     @media (min-width: 1024px) {
-      #profile {
-        display: flex;
-        min-height: calc(100dvh - var(--nav-h));
-        flex-direction: column;
-        justify-content: center;
-        padding-top: clamp(22px, 3vh, 34px);
-        padding-bottom: clamp(22px, 3vh, 34px);
-      }
-      #profile .section-head {
-        margin: 0 0 clamp(12px, 1.8vh, 20px);
-      }
-      #profile .section-head h2 {
-        margin-bottom: 8px;
-        font-size: clamp(42px, 4vw, 58px);
-        line-height: 0.92;
-        letter-spacing: -0.055em;
-      }
-      #profile .section-head p {
-        font-size: 13.5px;
-        line-height: 1.45;
-      }
-      #profile .profile-group-head {
-        margin-bottom: 9px;
-        padding-bottom: 8px;
-      }
-      #profile .profile-group-head h3 {
-        font-size: clamp(18px, 1.55vw, 23px);
-        letter-spacing: -0.025em;
-      }
-      #profile .profile-group-head--education { margin-top: 0; }
-
-      #profile .profile-facts {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-      #profile .profile-fact,
-      #profile .profile-fact:nth-child(n) {
-        grid-column: span 1;
-        min-height: 88px;
-        padding: clamp(13px, 1.45vw, 19px);
-      }
-      #profile .profile-fact::after {
-        left: clamp(13px, 1.45vw, 19px);
-        right: clamp(13px, 1.45vw, 19px);
-      }
-      #profile .profile-fact dt {
-        gap: 8px;
-        margin-bottom: clamp(10px, 1.25vh, 14px);
-        font-size: 11px;
-      }
-      #profile .profile-fact dt small {
-        font-size: 7.5px;
-        letter-spacing: 0.1em;
-      }
-      #profile .profile-fact dd {
-        font-size: clamp(18px, 1.7vw, 26px);
-        line-height: 1;
-        letter-spacing: -0.025em;
-      }
-
-      #profile .profile-detail-grid {
-        margin-top: clamp(12px, 1.8vh, 18px);
-      }
-      #profile .profile-education-card {
-        padding: clamp(17px, 1.7vw, 24px);
-      }
-      #profile .profile-education-card .edu-head {
-        padding-bottom: clamp(12px, 1.6vh, 17px);
-      }
-      #profile .profile-education-card .edu-head h3 {
-        margin-bottom: 5px;
-        font-size: clamp(28px, 2.8vw, 40px);
-      }
-      #profile .profile-education-card .edu-badge {
-        translate: 0 -2px;
-        padding: 1px 7px;
-        font-size: 9px;
-      }
-      #profile .profile-education-card .edu-major {
-        font-size: 12.5px;
-      }
-      #profile .profile-education-card .edu-time { font-size: 10.5px; }
-      #profile .profile-education-card .edu-fields {
-        gap: clamp(13px, 1.7vh, 18px) clamp(18px, 2.5vw, 34px);
-        margin-top: clamp(13px, 1.7vh, 18px);
-      }
-      #profile .profile-education-card .edu-fields > div {
-        padding-top: 9px;
-      }
-      #profile .profile-education-card .edu-fields dt {
-        margin-bottom: 5px;
-        font-size: 11px;
-      }
-      #profile .profile-education-card .edu-fields dd {
-        font-size: clamp(11.5px, 0.9vw, 13px);
-        line-height: 1.58;
-      }
-      #profile .profile-education-card .edu-fields .pub {
-        margin-bottom: 4px;
-        padding: 1px 7px;
-        font-size: 9.5px;
-      }
-      #profile .profile-skills-card {
-        height: calc(100% - 32px);
-        padding: clamp(17px, 1.7vw, 24px);
-      }
-      #profile .profile-skills-card .skill-groups {
-        gap: clamp(13px, 1.7vh, 18px);
+      .profile-split {
+        grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
       }
     }
 
+    /* 大屏：加宽证件照栏，档案字号微调 */
     @media (min-width: 1600px) and (min-height: 900px) {
-      #profile .section-head { margin-bottom: 22px; }
-      #profile .section-head h2 { font-size: 66px; }
-      #profile .section-head p { font-size: 15px; }
-      #profile .profile-group-head { margin-bottom: 11px; padding-bottom: 10px; }
-      #profile .profile-group-head h3 { font-size: 26px; }
-      #profile .profile-fact,
-      #profile .profile-fact:nth-child(n) {
-        min-height: 106px;
-        padding: 20px 22px;
-      }
-      #profile .profile-fact dt { margin-bottom: 17px; font-size: 12px; }
-      #profile .profile-fact dt small { font-size: 8px; }
-      #profile .profile-fact dd { font-size: 29px; }
-      #profile .profile-detail-grid { margin-top: 22px; gap: 18px; }
-      #profile .profile-education-card,
-      #profile .profile-skills-card { padding: 26px 28px; }
-      #profile .profile-education-card .edu-head h3 { font-size: 44px; }
-      #profile .profile-education-card .edu-major { font-size: 14px; }
-      #profile .profile-education-card .edu-time { font-size: 11.5px; }
-      #profile .profile-education-card .edu-fields dt { font-size: 12px; }
-      #profile .profile-education-card .edu-fields dd { font-size: 14px; line-height: 1.68; }
-      #profile .profile-skills-card .skill-group h4 { font-size: 10px; }
-      #profile .profile-skills-card .chip { padding: 6px 11px; font-size: 12.5px; }
+      .profile-split { grid-template-columns: minmax(0, 358px) minmax(0, 1fr); }
+      .portrait-slot-title { font-size: 16px; }
+      .profile-fact dd { font-size: 24px; }
+      .profile-education-card .edu-fields dd { font-size: 17.5px; }
     }
 
     .timeline::before { background: linear-gradient(180deg, var(--accent), transparent); }
@@ -2124,8 +2166,6 @@
       .home-copy { grid-column: 1 / 8; }
       .home-side { grid-column: 8 / 13; }
       .profile-card { transform: none; }
-      .profile-detail-grid { grid-template-columns: 1fr; gap: 34px; }
-      .profile-skills-card { height: auto; }
       .project:nth-child(n) { grid-column: span 6; }
       .project-featured { grid-column: 1 / -1 !important; }
     }
@@ -2175,24 +2215,22 @@
       .section-head { margin: 0 0 54px !important; }
       .section-head h2 { margin-bottom: 20px; font-size: clamp(48px, 16vw, 68px); line-height: 0.94; }
       .section-head p { font-size: 15.5px; }
-      .profile-group-head { align-items: flex-start; margin-bottom: 16px; }
-      .profile-group-head h3 { font-size: 27px; }
-      .profile-group-head p { padding-top: 5px; font-size: 9px; }
-      .profile-group-head--education { margin-top: 0; }
-      .profile-fact:nth-child(n) {
-        grid-column: 1 / -1;
-        min-height: 142px;
-        padding: 24px;
-      }
-      .profile-fact::after { left: 24px; right: 24px; }
-      .profile-fact dt { margin-bottom: 23px; }
-      .profile-fact dd { font-size: clamp(25px, 8vw, 35px); }
-      .profile-education-card { padding: 28px 24px; }
-      .profile-education-card .edu-head { align-items: flex-start; gap: 18px; }
-      .profile-education-card .edu-head h3 { font-size: 38px; }
-      .profile-education-card .edu-time { width: 100%; }
-      .profile-education-card .edu-fields { grid-template-columns: 1fr; gap: 24px; }
-      .profile-education-card .edu-fields > div:nth-child(n) { grid-column: 1; }
+      .profile-split { gap: 36px; }
+      .portrait-card { width: min(100%, 258px); }
+      .portrait-slot-title { font-size: 14.5px; }
+      .profile-group-head { margin-bottom: 11px; padding-bottom: 9px; }
+      .profile-group-head h3 { font-size: 21px; }
+      .profile-group-head p { font-size: 9px; }
+      .profile-group-head--stack { margin-top: 38px; }
+      .profile-facts { grid-template-columns: 1fr; }
+      .profile-fact { min-height: 0; padding: 20px; }
+      .profile-fact::after { left: 20px; right: 20px; }
+      .profile-fact dt { margin-bottom: 13px; }
+      .profile-fact dd { font-size: clamp(19px, 5.8vw, 24px); }
+      .profile-education-card { padding: 22px 20px; }
+      .profile-education-card .edu-head { align-items: flex-start; gap: 16px; }
+      .profile-education-card .edu-head h3 { font-size: 21px; }
+      .profile-skills-card { padding: 20px; }
       .profile-hero { gap: 42px; }
       .profile-card { order: 0; }
       .name { font-size: clamp(70px, 24vw, 98px); }
@@ -2229,7 +2267,7 @@
       line-height: 1.6;
     }
     #profile .section-head {
-      margin-bottom: clamp(14px, 1.8vh, 20px) !important;
+      margin-bottom: clamp(30px, 3.4vw, 46px) !important;
     }
     #profile .section-head h2 {
       font-size: clamp(32px, 2.7vw, 40px);
@@ -2261,11 +2299,11 @@
     #profile .profile-education-card .edu-school { min-width: 0; }
     #profile .profile-education-card .edu-head h3 { margin: 0; }
     #profile .profile-education-card .edu-badge {
-      min-width: 44px;
-      padding: 4px 9px;
+      min-width: 36px;
+      padding: 3px 8px;
       translate: 0;
       text-align: center;
-      font-size: clamp(11px, 0.85vw, 14px);
+      font-size: clamp(10px, 0.75vw, 12px);
       line-height: 1;
       letter-spacing: 0.06em;
     }
@@ -2303,9 +2341,20 @@
         justify-self: start;
       }
       #profile .profile-education-card .edu-badge {
-        min-width: 42px;
-        font-size: 12px;
+        min-width: 34px;
+        font-size: 11px;
       }
+    }
+
+    /* 窄幅双栏（768-940）：教育首行折成两排，校名与时间同排、专业学位单独一排 */
+    @media (min-width: 768px) and (max-width: 940px) {
+      #profile .profile-education-card .edu-head {
+        grid-template-columns: minmax(0, 1fr) auto;
+        row-gap: 9px;
+      }
+      #profile .profile-education-card .edu-school { grid-area: 1 / 1; }
+      #profile .profile-education-card .edu-time { grid-area: 1 / 2; }
+      #profile .profile-education-card .edu-major { grid-area: 2 / 1 / 3 / 3; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -2379,41 +2428,58 @@
     <section class="section shell panel" id="profile">
       <div class="section-head reveal">
         <h2>基本信息</h2>
-        <p>个人资料、教育背景与技能信息。</p>
+        <p>证件照、个人资料、教育背景与技能信息</p>
       </div>
 
-      <!-- 个人资料：按简历顺序呈现 -->
-      <div class="profile-group-head reveal">
-        <h3>个人资料</h3>
-      </div>
+      <div class="profile-split">
+        <!-- 证件照：将照片命名为 portrait.jpg 放入 assets 目录即自动显示（方形或 3:4 竖版均可，圆形裁切），未放入时显示取景空态 -->
+        <div class="portrait-column">
+          <figure class="portrait-card spot reveal">
+            <span class="portrait-disc" aria-hidden="true"></span>
 
-      <dl class="profile-facts reveal" style="--d:1">
-        <div class="profile-fact">
-          <dt><span>生日</span><small>Birth date</small></dt>
-          <dd>2002.10.19</dd>
+            <div class="portrait-slot">
+              <img class="portrait-photo" src="assets/portrait.jpg" alt="何涛的证件照" decoding="async" loading="lazy">
+              <span class="portrait-target" aria-hidden="true"></span>
+              <p class="portrait-slot-title">证件照</p>
+              <p class="portrait-slot-sub mono">Portrait</p>
+              <p class="portrait-slot-hint">待放入照片</p>
+            </div>
+          </figure>
         </div>
-        <div class="profile-fact">
-          <dt><span>电话</span><small>Phone</small></dt>
-          <dd><a href="tel:18284904310">18284904310</a></dd>
-        </div>
-        <div class="profile-fact">
-          <dt><span>地址</span><small>Location</small></dt>
-          <dd>陕西省西安市</dd>
-        </div>
-        <div class="profile-fact">
-          <dt><span>邮箱</span><small>Email</small></dt>
-          <dd><a href="mailto:3127791628@qq.com">3127791628@qq.com</a></dd>
-        </div>
-      </dl>
 
-      <div class="profile-detail-grid">
-        <!-- 教育背景 -->
-        <div class="profile-education-column">
-          <div class="profile-group-head profile-group-head--education reveal">
-            <h3>教育背景</h3>
+        <!-- 档案列：个人资料 → 教育背景 → 技能信息 -->
+        <div class="profile-info-column">
+          <div class="profile-group-head reveal">
+            <h3>个人资料</h3>
+            <p>Profile</p>
           </div>
 
-          <div class="education profile-education-card reveal" style="--d:1">
+          <dl class="profile-facts reveal" style="--d:1">
+            <div class="profile-fact">
+              <dt><span>生日</span><small>Birth date</small></dt>
+              <dd>2002.10.19</dd>
+            </div>
+            <div class="profile-fact">
+              <dt><span>电话</span><small>Phone</small></dt>
+              <dd><a href="tel:18284904310">18284904310</a></dd>
+            </div>
+            <div class="profile-fact">
+              <dt><span>地址</span><small>Location</small></dt>
+              <dd>陕西省西安市</dd>
+            </div>
+            <div class="profile-fact">
+              <dt><span>邮箱</span><small>Email</small></dt>
+              <dd><a href="mailto:3127791628@qq.com">3127791628@qq.com</a></dd>
+            </div>
+          </dl>
+
+          <!-- 教育背景 -->
+          <div class="profile-group-head profile-group-head--stack reveal">
+            <h3>教育背景</h3>
+            <p>Education</p>
+          </div>
+
+          <div class="education profile-education-card reveal">
             <article class="edu-item">
               <div class="edu-head">
                 <div class="edu-school">
@@ -2434,7 +2500,7 @@
                 </div>
                 <div>
                   <dt>竞赛经历</dt>
-                  <dd>全国大学生统计建模大赛省二等奖；全国大学生市场调查与分析大赛校一等奖</dd>
+                  <dd>全国大学生统计建模大赛省二等奖<br>全国大学生市场调查与分析大赛校一等奖</dd>
                 </div>
                 <div>
                   <dt>科研成果</dt>
@@ -2447,40 +2513,41 @@
               </dl>
             </article>
           </div>
-        </div>
 
-        <!-- 技能信息 -->
-        <div class="profile-skills-column">
-          <div class="profile-group-head reveal">
+          <!-- 技能信息 -->
+          <div class="profile-group-head profile-group-head--stack reveal">
             <h3>技能信息</h3>
+            <p>Skills</p>
           </div>
-          <div class="skills profile-skills-card reveal" style="--d:2">
+          <div class="skills profile-skills-card reveal">
             <div class="skill-groups">
               <div class="skill-group">
-                <h4>Research</h4>
+                <h4>办公</h4>
                 <ul class="chips">
-                  <li class="chip chip--ai">时间序列预测</li>
-                  <li class="chip chip--ai">深度学习</li>
-                  <li class="chip chip--ai">机器学习</li>
-                  <li class="chip chip--ai">多元统计分析</li>
+                  <li class="chip chip--tool">PPT</li>
+                  <li class="chip chip--tool">Excel</li>
+                  <li class="chip chip--tool">Word</li>
+                  <li class="chip chip--tool">飞书</li>
                 </ul>
               </div>
               <div class="skill-group">
-                <h4>Method</h4>
+                <h4>工具</h4>
                 <ul class="chips">
-                  <li class="chip chip--data">检索增强生成 RAG</li>
-                  <li class="chip chip--data">Mixture-of-Experts</li>
-                  <li class="chip chip--data">多粒度分解</li>
-                  <li class="chip chip--data">统计建模</li>
+                  <li class="chip chip--ai">Python</li>
+                  <li class="chip chip--ai">SQL</li>
+                  <li class="chip chip--ai">Codex</li>
+                  <li class="chip chip--ai">Workbuddy</li>
+                  <li class="chip chip--ai">PowerBI</li>
+                  <li class="chip chip--ai">墨刀</li>
                 </ul>
               </div>
               <div class="skill-group">
-                <h4>Tool</h4>
+                <h4>AI</h4>
                 <ul class="chips">
-                  <li class="chip chip--tool">Python</li>
-                  <li class="chip chip--tool">SQL</li>
-                  <li class="chip chip--tool">数据库系统</li>
-                  <li class="chip chip--tool">科学计算</li>
+                  <li class="chip chip--data">RAG</li>
+                  <li class="chip chip--data">Agent</li>
+                  <li class="chip chip--data">Skill</li>
+                  <li class="chip chip--data">Prompt</li>
                 </ul>
               </div>
             </div>
@@ -2493,7 +2560,7 @@
     <section class="section shell panel" id="experience">
       <div class="section-head reveal">
         <h2>实习经历</h2>
-        <p>以时间线呈现每段实习中的职责、工作内容与量化成果。</p>
+        <p>以时间线呈现每段实习中的职责、工作内容与量化成果</p>
       </div>
 
       <div class="timeline">
@@ -2575,7 +2642,7 @@
     <section class="section shell panel" id="projects">
       <div class="section-head reveal">
         <h2>项目介绍</h2>
-        <p>每个项目说明背景、我的职责、实现方式与技术栈，以及最终结果。</p>
+        <p>每个项目说明背景、我的职责、实现方式与技术栈，以及最终结果</p>
       </div>
 
       <div class="projects-grid">
@@ -2707,7 +2774,7 @@
     <section class="section shell panel" id="contact">
       <div class="section-head reveal">
         <h2>联系方式</h2>
-        <p>欢迎就数据分析、统计建模、算法研究及相关岗位与我联系。</p>
+        <p>欢迎就数据分析、统计建模、算法研究及相关岗位与我联系</p>
       </div>
 
       <div class="contact-panel glass spot reveal">
@@ -2902,6 +2969,16 @@
           }, 34);
         });
       }
+
+      /* ---------------- 证件照：加载成功后切换到有照片状态 ---------------- */
+      Array.prototype.forEach.call(document.querySelectorAll(".portrait-photo"), function (img) {
+        var slot = img.closest(".portrait-slot");
+        if (!slot) return;
+        function showPhoto() { slot.classList.add("has-photo"); }
+        if (img.complete && img.naturalWidth > 0) showPhoto();
+        else img.addEventListener("load", showPhoto);
+        img.addEventListener("error", function () { img.remove(); });
+      });
 
       /* ---------------- 其他 ---------------- */
       var resizeRaf = 0;
